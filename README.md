@@ -1,8 +1,7 @@
 # ActiveJobSqsAdapter
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/active_job_sqs_adapter`. To experiment with that code, run `bin/console` for an interactive prompt.
-
-TODO: Delete this and the text above, and describe your gem
+An easy to use adapter for Rails ActiveJob for performing background jobs through [AWS SQS](https://aws.amazon.com/sqs/). 
+This can be used to push the jobs to AWS SQS queue and to execute the jobs from the SQS queue.
 
 ## Installation
 
@@ -20,20 +19,73 @@ Or install it yourself as:
 
     $ gem install active_job_sqs_adapter
 
+## Configuration:
+To push the jobs to SQS queue just set the ActiveJob queue adapter as **ActiveJobSqsAdapter** either in `config/application.rb` or in the specific environment config file:   
+
+```ruby
+class Application < Rails::Application
+  # ...
+  config.active_job.queue_adapter = ActiveJobSqsAdapter
+end
+```
+
+Create a job using rails generator:
+```ruby
+rails generate job SqsExampleJob
+```
+
+The generator will create the job in `/app/jobs/sqs_example_job.rb` as below:
+
+```ruby
+class SqsExampleJob < ActiveJob::Base
+  # Set the Queue as Default
+  queue_as :default
+  
+  def perform(*args)
+    # Perform Job
+  end
+end
+```
+
+##### Queue:
+The above job(`SqsExampleJob`) will use `default` queue.
+
+For more about specifying the queue to which the jobs needs to be pushed in the SQS see: [active_job_basics#queues](http://edgeguides.rubyonrails.org/active_job_basics.html#queues)
+
+
+
 ## Usage
+Just run the job as usual and and **ActiveJobSqsAdapter** with handle the rest.
 
-TODO: Write usage instructions here
+```ruby
+SqsExampleJob.perform_later(args)
+```
 
-## Development
+If you wish to perform jobs immediately and not in background just use `perform_now` instead of `perform_later` 
+```ruby
+SqsExampleJob.perform_now(args)
+```
 
-After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
+##### Delay:
+Set delay for the job to perform:
+```ruby
+SqsExampleJob.set(wait: 10.minutes).perform_later(args)
+```
 
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
+__Note:__ The maximum delay time can be set for a job is **15 minutes** because of the restriction in AWS SQS.
+
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/active_job_sqs_adapter. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct.
+Bug reports and pull requests are welcome on GitHub at https://github.com/MallowTech/active_job_sqs_adapter. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct.
 
+You can just:
+
+1. Fork it
+2. Create your feature branch (`git checkout -b my-new-feature`)
+3. Commit your changes (`git commit -am 'Add some feature'`)
+4. Push to the branch (`git push origin my-new-feature`)
+5. Create new Pull Request
 
 ## License
 
