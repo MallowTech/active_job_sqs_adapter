@@ -1,6 +1,7 @@
 # ActiveJobSqsAdapter
 
-An easy to use adapter for Rails ActiveJob to push the jobs to AWS SQS queue and to execute the jobs from the SQS queue.
+An easy to use adapter for Rails ActiveJob for performing background jobs through [AWS SQS](https://aws.amazon.com/sqs/). 
+This can be used to push the jobs to AWS SQS queue and to execute the jobs from the SQS queue.
 
 ## Installation
 
@@ -19,7 +20,7 @@ Or install it yourself as:
     $ gem install active_job_sqs_adapter
 
 ## Configuration:
-To push the jobs to SQS queue just set the ActiveJob queue adapter as**ActiveJobSqsAdapter**either in `config/application.rb` or in the specific environment config file:   
+To push the jobs to SQS queue just set the ActiveJob queue adapter as **ActiveJobSqsAdapter** either in `config/application.rb` or in the specific environment config file:   
 
 ```ruby
 class Application < Rails::Application
@@ -54,7 +55,7 @@ For more about specifying the queue to which the jobs needs to be pushed in the 
 
 
 ## Usage
-Just run the job as usual and and**ActiveJobSqsAdapter** with handle the rest.
+Just run the job as usual and and **ActiveJobSqsAdapter** with handle the rest.
 
 ```ruby
 SqsExampleJob.perform_later(args)
@@ -71,7 +72,7 @@ Set delay for the job to perform:
 SqsExampleJob.set(wait: 10.minutes).perform_later(args)
 ```
 
-__Note:__ The maximum delay time can be set for a job is**15 minutes**because of the restriction in AWS SQS.
+__Note:__ The maximum delay time can be set for a job is **15 minutes** because of the restriction in AWS SQS.
 
 
 ## Contributing
