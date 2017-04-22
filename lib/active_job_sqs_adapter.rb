@@ -1,5 +1,40 @@
 require "active_job_sqs_adapter/version"
+require 'aws-sdk-core'
+require 'multi_json'
 
-module ActiveJobSqsAdapter
-  # Your code goes here...
+# Push the jobs into sqs queue
+class ActiveJobSqsAdapter
+  class << self
+    def enqueue(job)
+      sqs.send_message(
+          queue_url: get_queue_url(job),
+          message_body: MultiJson.dump(job.serialize)
+      )
+    end
+
+    def enqueue_at(job, timestamp)
+      delay = timestamp.to_i - Time.current.to_i
+      sqs.send_message(
+          queue_url: get_queue_url(job),
+          message_body: MultiJson.dump(job.serialize),
+          delay_seconds: delay,
+      )
+    end
+
+    def sqs
+      Aws::SQS::Client.new
+    end
+
+    def get_queue_url(job)
+      sqs.create_queue(queue_name: job.queue_name)[:queue_url]
+    end
+  end
+
+  class JobWrapper
+    class << self
+      def perform(job_data)
+        ActiveJob::Base.execute job_data
+      end
+    end
+  end
 end
