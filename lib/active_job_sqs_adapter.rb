@@ -3,7 +3,7 @@ require 'aws-sdk-core'
 require 'multi_json'
 
 # Push the jobs into sqs queue
-class ActiveJobSqsAdapter
+module ActiveJobSqsAdapter
   class << self
     def enqueue(job)
       sqs.send_message(
